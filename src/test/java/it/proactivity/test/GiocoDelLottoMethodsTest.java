@@ -1,13 +1,13 @@
-package it.proactivity.utility;
+package it.proactivity.test;
 
 import it.proactivity.model.Extraction;
+import it.proactivity.utility.GiocoDelLottoMethods;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,11 +34,11 @@ class GiocoDelLottoMethodsTest {
     }
 
     @Test
-    public void showAllExtractionsTest() {
+    public void getAllExtractionsPositiveTest() {
         Session session = createSession();
         beginTransaction(session);
 
-        List<Extraction> extractionList = GiocoDelLottoMethods.showAllExtractions(session);
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractions(session);
 
         endTransaction(session);
         closeSession(session);
