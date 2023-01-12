@@ -13,14 +13,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GiocoDelLottoMethodsTest {
-    private static Session createSession() {
+
+    private Session createSession() {
         SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         return session;
     }
 
-    private static void closeSession(Session session) {
+    private void closeSession(Session session) {
         session.close();
     }
 
@@ -28,18 +29,21 @@ class GiocoDelLottoMethodsTest {
         return session.getTransaction();
     }
 
-    private static void endTransaction(Transaction transaction) {
-        transaction.commit();
+    private static void endTransaction(Session session) {
+        session.getTransaction().commit();
     }
 
     @Test
     public void showAllExtractionsTest() {
         Session session = createSession();
-        Transaction transaction = beginTransaction(session);
+        beginTransaction(session);
 
-        assertNotNull(GiocoDelLottoMethods.showAllExtractions(session));
+        List<Extraction> extractionList = GiocoDelLottoMethods.showAllExtractions(session);
 
+        endTransaction(session);
+        closeSession(session);
+
+        assertNotNull(extractionList);
+        assertTrue(extractionList.size() > 0);
     }
-
-
 }

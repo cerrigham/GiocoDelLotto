@@ -15,10 +15,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Setter
 public class Superenalotto {
-
-
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -42,6 +40,7 @@ public class Superenalotto {
 
     @Column(name = "extraction_date")
     private LocalDate date;
+
     @Override
     public String toString() {
         return """

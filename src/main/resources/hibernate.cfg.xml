@@ -25,7 +25,9 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Annotated entity classes -->
-        <mapping class="it.proactivity.model.Forniture"/>
+        <mapping class="it.proactivity.model.Extraction"/>
+        <mapping class="it.proactivity.model.Superenalotto"/>
+        <mapping class="it.proactivity.model.Wheel"/>
 
     </session-factory>
 </hibernate-configuration>

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+
 @Entity
 @Table(name = "extraction")
 @AllArgsConstructor
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @Setter
 public class Extraction {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -37,15 +38,15 @@ public class Extraction {
     @Column(name = "extraction_date")
     private LocalDate extractionDate;
 
-    @OneToMany
+    @ManyToOne
     private Wheel wheel;
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[" + id + "]" +  " ");
-        sb.append(fifthNumber +  " - " + secondNumber +  " - " + thirdNumber +  " - " + fourthNumber
-                +  " - " +fifthNumber);
+        sb.append("[" + id + "]" + " ");
+        sb.append(fifthNumber + " - " + secondNumber + " - " + thirdNumber + " - " + fourthNumber
+                + " - " + fifthNumber);
         return sb.toString();
     }
 

@@ -15,9 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 public class Wheel {
-
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -27,12 +26,9 @@ public class Wheel {
     @Column(name = "city")
     private String city;
 
-
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="wheel_id")
+    @JoinColumn(name = "wheel_id")
     private List<Extraction> extractionList;
-
-
 
     @Override
     public String toString() {
