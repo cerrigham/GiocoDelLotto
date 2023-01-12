@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "wheel")
@@ -26,12 +27,12 @@ public class Wheel {
     @Column(name = "city")
     private String city;
 
-    /*
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="wheel_id")
     private List<Extraction> extractionList;
 
-     */
+
 
     @Override
     public String toString() {
