@@ -16,4 +16,11 @@ public class GiocoDelLottoMethods {
         return extractions;
     }
 
+    public static List<Extraction> getAllExtractionsFromAWheel(Session session, Long id) {
+        final String selectAllExtractionsFromWheel = "SELECT e FROM Extraction e WHERE e.id = : id";
+        List<Extraction> extractions = session.createQuery(selectAllExtractionsFromWheel)
+                .setParameter("id", id).list();
+        return extractions;
+    }
+
 }

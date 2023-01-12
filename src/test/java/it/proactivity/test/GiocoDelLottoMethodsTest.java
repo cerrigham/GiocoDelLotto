@@ -45,5 +45,47 @@ class GiocoDelLottoMethodsTest {
 
         assertNotNull(extractionList);
         assertTrue(extractionList.size() > 0);
+
     }
+
+    @Test
+    public void getAllExtractionsNegativeTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractions(session);
+
+        endTransaction(session);
+        closeSession(session);
+
+        assertFalse(extractionList.size() == 3);
+    }
+
+    @Test
+    public void getAllExtractionsFromAWheelPositiveTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, 2l);
+        endTransaction(session);
+        closeSession(session);
+
+        assertTrue(extractionList.size() != 0);
+    }
+
+    @Test
+    public void getAllExtractionsFromAWheelNegativeTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, 2l);
+        endTransaction(session);
+        closeSession(session);
+
+        assertFalse(extractionList.size() == 0);
+    }
+
+
+
+
 }
