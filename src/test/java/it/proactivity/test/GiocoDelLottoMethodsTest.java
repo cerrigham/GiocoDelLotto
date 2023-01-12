@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,4 +47,58 @@ class GiocoDelLottoMethodsTest {
         assertNotNull(extractionList);
         assertTrue(extractionList.size() > 0);
     }
+
+    @Test
+    public void getAllExtractionForOneDatePositiveTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractions = GiocoDelLottoMethods.getAllExtractionForOneDate(session,"2023-01-12");
+
+        endTransaction(session);
+        closeSession(session);
+
+        assertNotNull(extractions);
+        assertTrue(extractions.size() > 0);
+        extractions.stream()
+                .forEach(e -> assertTrue(!(e.getFirstNumber().equals(null) && !(e.getSecondNumber().equals(null) &&
+                        !(e.getThirdNumber().equals(null) && !(e.getFourthNumber().equals(null) &&
+                                !(e.getFifthNumber().equals(null))))))));
+
+    }
+
+    @Test
+    public void checkExtractionListDatePositive() {
+
+        LocalDate date = LocalDate.of(2023,01,12);
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractions = GiocoDelLottoMethods.getAllExtractionForOneDate(session,"2023-01-12");
+
+        endTransaction(session);
+        closeSession(session);
+
+        extractions.stream()
+                .forEach(e -> assertTrue(e.getExtractionDate().equals(date)));
+    }
+
+    @Test
+    public void getAllExtractionsNegativeTest() {
+
+        LocalDate date = LocalDate.of(2023,01,14);
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractions = GiocoDelLottoMethods.getAllExtractionForOneDate(session,"2023-01-12");
+
+        endTransaction(session);
+        closeSession(session);
+
+        extractions.stream()
+                .forEach(e -> assertFalse(e.getExtractionDate().equals(date)));
+
+
+    }
+
 }
