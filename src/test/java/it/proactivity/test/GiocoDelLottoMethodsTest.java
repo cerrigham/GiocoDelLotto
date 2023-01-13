@@ -129,7 +129,7 @@ class GiocoDelLottoMethodsTest {
         Session session = createSession();
 
         assertTrue(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,"2023-01-12"));
-
+        assertFalse(session.isOpen());
     }
 
     @Test
@@ -137,6 +137,7 @@ class GiocoDelLottoMethodsTest {
         Session session = createSession();
 
         assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,"12-01-2023"));
+        assertFalse(session.isOpen());
     }
 
     @Test
@@ -144,6 +145,7 @@ class GiocoDelLottoMethodsTest {
         Session session = createSession();
 
         assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,""));
+        assertFalse(session.isOpen());
     }
 
     @Test
@@ -151,5 +153,6 @@ class GiocoDelLottoMethodsTest {
         Session session = createSession();
 
         assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,null));
+        assertFalse(session.isOpen());
     }
 }
