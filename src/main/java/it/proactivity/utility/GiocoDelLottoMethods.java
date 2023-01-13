@@ -21,10 +21,20 @@ public class GiocoDelLottoMethods {
         if (wheel == null) {
             return null;
         }
-        final String selectAllExtractionsFromWheel = "SELECT e FROM Extraction e WHERE e.wheel = : wheel";
+        final String selectAllExtractionsFromWheel = "SELECT e FROM Extraction e WHERE e.wheel = :wheel";
         List<Extraction> extractions = session.createQuery(selectAllExtractionsFromWheel)
-                .setParameter("wheel", wheel.getExtractionList()).list();
+                .setParameter("wheel", wheel).list();
         return extractions;
+    }
+
+    public static Wheel getMilanoWheel(Session session) {
+       final String MILANO_CITY = "Milano";
+       final String milanoWheelQueryString = "SELECT w " +
+               "FROM Wheel w " +
+               "WHERE w.city = :milanoCity";
+       Query<Wheel> wheelQuery = session.createQuery(milanoWheelQueryString)
+               .setParameter("milanoCity", MILANO_CITY);
+       return wheelQuery.getSingleResult();
     }
 
 }

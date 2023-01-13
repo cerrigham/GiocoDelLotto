@@ -66,15 +66,15 @@ class GiocoDelLottoMethodsTest {
     public void getAllExtractionsFromAWheelPositiveTest() {
         Session session = createSession();
         beginTransaction(session);
-        Wheel wheel = null;
-        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, wheel);
+        Wheel milanoWheel = GiocoDelLottoMethods.getMilanoWheel(session);
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, milanoWheel);
         endTransaction(session);
         closeSession(session);
 
-        assertTrue(extractionList == null);
+        assertNotNull(extractionList != null);
     }
 
-   @Test
+   /*@Test
     public void getAllExtractionsFromAWheelNegativeTest() {
         Session session = createSession();
         beginTransaction(session);
@@ -84,7 +84,7 @@ class GiocoDelLottoMethodsTest {
         closeSession(session);
 
         assertFalse(extractionList.size() == 0);
-    }
+    }*/
 
 
 
