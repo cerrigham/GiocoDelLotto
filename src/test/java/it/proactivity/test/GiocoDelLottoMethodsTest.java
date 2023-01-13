@@ -97,8 +97,6 @@ class GiocoDelLottoMethodsTest {
 
         extractions.stream()
                 .forEach(e -> assertFalse(e.getExtractionDate().equals(date)));
-
-
     }
 
 }

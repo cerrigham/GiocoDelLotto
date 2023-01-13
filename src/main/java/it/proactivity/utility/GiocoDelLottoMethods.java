@@ -18,22 +18,21 @@ public class GiocoDelLottoMethods {
     }
 
     public static List<Extraction> getAllExtractionForOneDate(Session session, String date) {
-
         if (date == null || date.isEmpty()) {
             return null;
         }
 
         LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+        if(parsedDate == null) {
+            return null;
+        }
 
-        final String getAllTransactionForOneDate= "SELECT e FROM Extraction e LEFT JOIN FETCH e.wheel " +
+        final String getAllTransactionForOneDate = "SELECT e FROM Extraction e LEFT JOIN FETCH e.wheel " +
                 "WHERE e.extractionDate = :extractionDate";
 
         Query<Extraction> extractionQuery = session.createQuery(getAllTransactionForOneDate)
-                .setParameter("extractionDate",parsedDate);
+                .setParameter("extractionDate", parsedDate);
 
-             return  extractionQuery.list();
-
-
+        return extractionQuery.list();
     }
-
 }
