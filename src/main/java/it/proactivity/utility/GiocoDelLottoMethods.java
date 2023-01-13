@@ -94,5 +94,51 @@ public class GiocoDelLottoMethods {
         return wheelQuery.getSingleResult();
     }
 
+    public Boolean insertExtractionByDateAndWheel(Session session, String date, String city) {
+
+        checkSession(session);
+
+        if (date == null || date.isEmpty() || city == null || city.isEmpty()) {
+            endSession(session);
+            return false;
+        }
+
+        Integer wheelId = TransformerUtility.transformCityToId(city);
+        if (wheelId.equals(0)) {
+            endSession(session);
+            return false;
+        }
+
+        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+        if (parsedDate == null) {
+            endSession(session);
+            return false;
+        }
+
+
+        Query insertExtraction = session.createSQLQuery("INSERT INTO extraction (first_number, " +
+                "second_number, third_number, fourth_number, fifth_number, extraction_date, wheel_id) " +
+                "VALUES(:first, :second, :third, :fourth, :fifth, :date, :city)");
+
+        //Controllare che non vengano generati numeri uguali
+        insertExtraction.setParameter("first", (int)Math.abs (Math.random() * (1 - 90 + 1)) + 1);
+        insertExtraction.setParameter("second", (int)Math.abs (Math.random() * (1 - 90 + 1)) + 1);
+        insertExtraction.setParameter("third", (int) Math.abs(Math.random() * (1 - 90 + 1)) + 1);
+        insertExtraction.setParameter("fourth", (int)Math.abs (Math.random() * (1 - 90 + 1)) + 1);
+        insertExtraction.setParameter("fifth", (int) Math.abs(Math.random() * (1 - 90 + 1)) + 1);
+        insertExtraction.setParameter("date",parsedDate);
+        insertExtraction.setParameter("city",wheelId);
+
+        int res = insertExtraction.executeUpdate();
+
+        endSession(session);
+
+        if (res != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 }

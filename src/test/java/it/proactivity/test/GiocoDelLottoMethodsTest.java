@@ -120,4 +120,66 @@ class GiocoDelLottoMethodsTest {
         assertFalse(session.isOpen());
         assertNull(extractionList);
     }
+
+    @Test
+    public void insertExtractionByDateAndWheelPositiveTest() {
+        Session session = createSession();
+
+        assertTrue(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19","Nazionale"));
+        assertTrue(!session.isOpen());
+    }
+
+    @Test
+    public void insertExtractionByDateAndWheelWrongFormateDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"19-01-2023","Nazionale"));
+        assertTrue(!session.isOpen());
+
+    }
+
+    @Test
+    public void insertExtractionByDateAndWheelEmptyDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"","Nazionale"));
+        assertTrue(!session.isOpen());
+
+    }
+
+    @Test
+    public void insertExtractionByDateAndWheelNullDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,null,"Nazionale"));
+        assertTrue(!session.isOpen());
+
+    }
+
+    @Test
+    public void insertExtractionByDateAndWheelEmptyCityNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19",""));
+        assertTrue(!session.isOpen());
+
+    }
+
+    @Test
+    public void insertExtractionByDateAndWheelWrongCityNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19","Genova"));
+        assertTrue(!session.isOpen());
+
+    }
+
+    @Test
+    public void insertExtractionByDateAndWheelNullCityNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19",null));
+        assertTrue(!session.isOpen());
+
+    }
 }
