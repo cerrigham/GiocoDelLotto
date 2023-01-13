@@ -1,5 +1,6 @@
 package it.proactivity.utility;
 
+import it.proactivity.giocoDelLottoPredicate.GiocoDelLottoPredicate;
 import it.proactivity.model.Extraction;
 import it.proactivity.model.Wheel;
 import org.hibernate.Session;
@@ -8,7 +9,9 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GiocoDelLottoMethods {
 
@@ -93,6 +96,46 @@ public class GiocoDelLottoMethods {
                 .setParameter("milanoCity", MILANO_CITY);
         return wheelQuery.getSingleResult();
     }
+
+
+    public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
+
+        List<Extraction> extractions = getAllExtractionForOneDate(session,date);
+        if (extractions == null) {
+            return false;
+        }
+
+        List<Extraction> filteredList = extractions.stream()
+                .filter(GiocoDelLottoPredicate::filterExtractionBySuperenalottoCity)
+                .sorted(Comparator.comparing(e -> e.getWheel().getCity()))
+                .toList();
+
+        Session newSession = createSession();
+
+        Query query = newSession.createSQLQuery("INSERT INTO superenalotto (bari, firenze, milano, napoli, " +
+                "palermo, roma, extraction_date) " +
+                "VALUES (:bari, :firenze, :milano, :napoli, :palermo, :roma, :extraction_date)")
+                .setParameter("bari",filteredList.get(0).getFirstNumber())
+                .setParameter("firenze",filteredList.get(1).getFirstNumber())
+                .setParameter("milano",filteredList.get(2).getFirstNumber())
+                .setParameter("napoli",filteredList.get(3).getFirstNumber())
+                .setParameter("palermo",filteredList.get(4).getFirstNumber())
+                .setParameter("roma",filteredList.get(5).getFirstNumber())
+                .setParameter("extraction_date",filteredList.get(0).getExtractionDate());
+
+        int res = query.executeUpdate();
+
+        endSession(newSession);
+
+        if (res != 0) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+
+
 
 
 }

@@ -1,5 +1,6 @@
 package it.proactivity.test;
 
+import it.proactivity.giocoDelLottoPredicate.GiocoDelLottoPredicate;
 import it.proactivity.model.Extraction;
 import it.proactivity.model.Wheel;
 import it.proactivity.utility.GiocoDelLottoMethods;
@@ -9,6 +10,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,6 +58,7 @@ class GiocoDelLottoMethodsTest {
 
         Session session = createSession();
         List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,"2023-01-12");
+
 
         assertFalse(session.isOpen());
         extractions.stream()
@@ -119,5 +122,34 @@ class GiocoDelLottoMethodsTest {
 
         assertFalse(session.isOpen());
         assertNull(extractionList);
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoPositiveTest() {
+        Session session = createSession();
+
+        assertTrue(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,"2023-01-12"));
+
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoWrongFormatDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,"12-01-2023"));
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoEmptyDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,""));
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoNullDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,null));
     }
 }
