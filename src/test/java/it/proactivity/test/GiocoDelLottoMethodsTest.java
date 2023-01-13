@@ -99,4 +99,27 @@ class GiocoDelLottoMethodsTest {
                 .forEach(e -> assertFalse(e.getExtractionDate().equals(date)));
     }
 
+    @Test
+    public void getAllExtractionsNullListFromNullInputTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractions = GiocoDelLottoMethods.getAllExtractionForOneDate(session,null);
+
+        endTransaction(session);
+        closeSession(session);
+
+        assertNull(extractions);
+    }
+
+    @Test
+    public void getAllExtractionsNullListFromWrongFormatDateTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractions = GiocoDelLottoMethods.getAllExtractionForOneDate(session,"12-01-2023");
+
+        endTransaction(session);
+        closeSession(session);
+    }
 }
