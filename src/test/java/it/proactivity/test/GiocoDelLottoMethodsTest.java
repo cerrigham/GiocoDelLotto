@@ -100,7 +100,7 @@ class GiocoDelLottoMethodsTest {
     }
 
     @Test
-    public void getAllExtractionsNullListFromNullInputTest() {
+    public void getAllExtractionForOneDateNegativeNullDateTest() {
         Session session = createSession();
         beginTransaction(session);
 
@@ -113,7 +113,7 @@ class GiocoDelLottoMethodsTest {
     }
 
     @Test
-    public void getAllExtractionsNullListFromWrongFormatDateTest() {
+    public void getAllExtractionForOneDateNegativeWrongFormatDateTest() {
         Session session = createSession();
         beginTransaction(session);
 
@@ -121,5 +121,20 @@ class GiocoDelLottoMethodsTest {
 
         endTransaction(session);
         closeSession(session);
+
+        assertNull(extractions);
+    }
+
+    @Test
+    public void getAllExtractionForOneDateNegativeEmptyDateTest() {
+        Session session = createSession();
+        beginTransaction(session);
+
+        List<Extraction> extractions = GiocoDelLottoMethods.getAllExtractionForOneDate(session,"");
+
+        endTransaction(session);
+        closeSession(session);
+
+        assertNull(extractions);
     }
 }
