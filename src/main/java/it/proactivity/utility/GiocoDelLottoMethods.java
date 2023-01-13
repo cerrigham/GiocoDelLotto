@@ -1,6 +1,7 @@
 package it.proactivity.utility;
 
 import it.proactivity.model.Extraction;
+import it.proactivity.model.Wheel;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -16,10 +17,13 @@ public class GiocoDelLottoMethods {
         return extractions;
     }
 
-    public static List<Extraction> getAllExtractionsFromAWheel(Session session, Long id) {
-        final String selectAllExtractionsFromWheel = "SELECT e FROM Extraction e WHERE e.id = : id";
+    public static List<Extraction> getAllExtractionsFromAWheel(Session session, Wheel wheel) {
+        if (wheel == null) {
+            return null;
+        }
+        final String selectAllExtractionsFromWheel = "SELECT e FROM Extraction e WHERE e.wheel = : wheel";
         List<Extraction> extractions = session.createQuery(selectAllExtractionsFromWheel)
-                .setParameter("id", id).list();
+                .setParameter("wheel", wheel.getExtractionList()).list();
         return extractions;
     }
 

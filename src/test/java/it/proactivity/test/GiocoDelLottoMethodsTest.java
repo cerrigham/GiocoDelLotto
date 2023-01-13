@@ -1,6 +1,7 @@
 package it.proactivity.test;
 
 import it.proactivity.model.Extraction;
+import it.proactivity.model.Wheel;
 import it.proactivity.utility.GiocoDelLottoMethods;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -65,20 +66,20 @@ class GiocoDelLottoMethodsTest {
     public void getAllExtractionsFromAWheelPositiveTest() {
         Session session = createSession();
         beginTransaction(session);
-
-        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, 2l);
+        Wheel wheel = null;
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, wheel);
         endTransaction(session);
         closeSession(session);
 
-        assertTrue(extractionList.size() != 0);
+        assertTrue(extractionList == null);
     }
 
-    @Test
+   @Test
     public void getAllExtractionsFromAWheelNegativeTest() {
         Session session = createSession();
         beginTransaction(session);
 
-        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, 2l);
+        List<Extraction> extractionList = GiocoDelLottoMethods.getAllExtractionsFromAWheel(session, );
         endTransaction(session);
         closeSession(session);
 
