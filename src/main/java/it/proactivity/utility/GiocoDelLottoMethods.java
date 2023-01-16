@@ -10,7 +10,9 @@ import org.hibernate.query.Query;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GiocoDelLottoMethods {
@@ -100,41 +102,57 @@ public class GiocoDelLottoMethods {
 
     public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
 
-        List<Extraction> extractions = getAllExtractionForOneDate(session,date);
-        if (extractions == null) {
-            return false;
+        checkSession(session);
+        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+        if (parsedDate == null) {
+            endSession(session);
+            return null;
         }
 
-        List<Extraction> filteredList = extractions.stream()
-                .filter(GiocoDelLottoPredicate::filterExtractionBySuperenalottoCity)
-                .sorted(Comparator.comparing(e -> e.getWheel().getCity()))
-                .toList();
+        List<Integer> firstNumberList = firstNumberList(session,date);
 
-        Session newSession = createSession();
-
-        Query query = newSession.createSQLQuery("INSERT INTO superenalotto (bari, firenze, milano, napoli, " +
-                "palermo, roma, extraction_date) " +
-                "VALUES (:bari, :firenze, :milano, :napoli, :palermo, :roma, :extraction_date)")
-                .setParameter("bari",filteredList.get(0).getFirstNumber())
-                .setParameter("firenze",filteredList.get(1).getFirstNumber())
-                .setParameter("milano",filteredList.get(2).getFirstNumber())
-                .setParameter("napoli",filteredList.get(3).getFirstNumber())
-                .setParameter("palermo",filteredList.get(4).getFirstNumber())
-                .setParameter("roma",filteredList.get(5).getFirstNumber())
-                .setParameter("extraction_date",filteredList.get(0).getExtractionDate());
+        Query query = session.createQuery("INSERT INTO superenalotto(bari, firenze, milano, napoli, palermo, roma,extraction_date)" +
+                "VALUES(:bari, :firenze, :milano, :napoli, :palermo, :roma, :date)");
+        query.setParameter("bari", firstNumberList.get(0));
+        query.setParameter("firenze", firstNumberList.get(1));
+        query.setParameter("milano", firstNumberList.get(2));
+        query.setParameter("napoli", firstNumberList.get(3));
+        query.setParameter("palermo", firstNumberList.get(4));
+        query.setParameter("roma", firstNumberList.get(5));
+        query.setParameter("date", parsedDate);
 
         int res = query.executeUpdate();
 
-        endSession(newSession);
+        endSession(session);
 
-        if (res != 0) {
+        if(res != 0)
             return true;
-        }else {
+        else
             return false;
-        }
+
     }
 
 
+    private Map<Integer,String> firstNumberList(Session session, String date) {
+        if (session == null) {
+            return null;
+        }
+
+        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+
+       Query query = session.createSQLQuery("SELECT e.first_number, w.city FROM extraction e, wheel w" +
+               " WHERE w.city IN('Bari', 'Firenze', 'Milano', 'Napoli', 'Palermo', 'Roma') AND e.extraction_date = :date " +
+               "ORDER BY w.city ");
+
+       query.setParameter("date", parsedDate);
+
+       List<Integer> firstNumberList = query.list();
+       Map<Integer,String> firstNumbersMap = new HashMap<>();
+
+
+
+       return ;
+    }
 
 
 
