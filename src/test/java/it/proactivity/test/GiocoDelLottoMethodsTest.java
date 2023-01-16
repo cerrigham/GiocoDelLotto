@@ -214,4 +214,30 @@ class GiocoDelLottoMethodsTest {
         assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,null));
         assertFalse(session.isOpen());
     }
+
+    @Test
+    public void getMinimumNumberFromAllExtractionByWheelPositiveTest() {
+        Session session = createSession();
+        Integer minValue = getGiocoDelLottoMethods().getMinimumNumberFromAllExtractionByWheel(session,"Napoli");
+        assertEquals(1,minValue);
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void getMinimumNumberFromAllExtractionByWheelNullCityNegativeTest() {
+        Session session = createSession();
+        Integer minValue = getGiocoDelLottoMethods().getMinimumNumberFromAllExtractionByWheel(session,null);
+        assertNull(minValue);
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void getMinimumNumberFromAllExtractionByWheelEmptyCityNegativeTest() {
+        Session session = createSession();
+        Integer minValue = getGiocoDelLottoMethods().getMinimumNumberFromAllExtractionByWheel(session,"");
+        assertNull(minValue);
+        assertFalse(session.isOpen());
+    }
+
+
 }

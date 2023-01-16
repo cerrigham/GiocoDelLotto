@@ -1,5 +1,6 @@
 package it.proactivity.main;
 
+import it.proactivity.comparator.NumberComparator;
 import it.proactivity.model.Extraction;
 import it.proactivity.model.Wheel;
 import it.proactivity.utility.ParsingUtility;
@@ -8,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -219,6 +221,27 @@ public class GiocoDelLottoMethods {
         }
     }
 
+    public Integer getMinimumNumberFromAllExtractionByWheel(Session session, String cityName) {
+        if (session == null || cityName == null || cityName.isEmpty()) {
+            endSession(session);
+            return null;
+        }
+        checkSession(session);
+        List<Integer> minimumValueList = createMinimumValueList(session, cityName);
+
+        if (minimumValueList == null || minimumValueList.isEmpty()) {
+            endSession(session);
+            return null;
+        }
+        endSession(session);
+
+        NumberComparator comparator = new NumberComparator();
+
+        Integer minValue = minimumValueList.stream()
+                .min(comparator).get();
+        return minValue;
+    }
+
     private List<Integer> getFirstNumbersList(Session session, LocalDate date) {
         if (session == null) {
             return null;
@@ -277,5 +300,54 @@ public class GiocoDelLottoMethods {
         extraction.setFifthNumber(extractionList.get(4));
 
         return extraction;
+    }
+    private List<Integer> createMinimumValueList(Session session, String cityName) {
+        if (session == null || cityName == null || cityName.isEmpty()) {
+            endSession(session);
+            return null;
+        }
+
+        List<Integer> minimumValuesList = new ArrayList<>();
+
+        List<Integer> firstNumber =  session.createSQLQuery("SELECT  MIN(e.first_number)\n" +
+                        "FROM extraction e, wheel w\n" +
+                        "WHERE w.city = :city AND e.wheel_id = w.id")
+                .setParameter("city", cityName).getResultList();
+
+            minimumValuesList.add(firstNumber.get(0));
+
+
+        List<Integer> secondNumber =  session.createSQLQuery("SELECT  MIN(e.second_number)\n" +
+                        "FROM extraction e, wheel w\n" +
+                        "WHERE w.city = :city AND e.wheel_id = w.id")
+                .setParameter("city", cityName).getResultList();
+
+            minimumValuesList.add(secondNumber.get(0));
+
+
+        List<Integer> thirdNumber =  session.createSQLQuery("SELECT  MIN(e.third_number)\n" +
+                        "FROM extraction e, wheel w\n" +
+                        "WHERE w.city = :city AND e.wheel_id = w.id")
+                .setParameter("city", cityName).getResultList();
+
+            minimumValuesList.add(thirdNumber.get(0));
+
+
+        List<Integer> fourthNumber =  session.createSQLQuery("SELECT  MIN(e.fourth_number)\n" +
+                        "FROM extraction e, wheel w\n" +
+                        "WHERE w.city = :city AND e.wheel_id = w.id")
+                .setParameter("city", cityName).getResultList();
+
+            minimumValuesList.add(fourthNumber.get(0));
+
+
+        List<Integer> fifthNumber =  session.createSQLQuery("SELECT  MIN(e.fifth_number)\n" +
+                        "FROM extraction e, wheel w\n" +
+                        "WHERE w.city = :city AND e.wheel_id = w.id")
+                .setParameter("city", cityName).getResultList();
+
+        minimumValuesList.add(fifthNumber.get(0));
+
+        return minimumValuesList;
     }
 }
