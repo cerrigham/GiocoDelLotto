@@ -96,24 +96,27 @@ public class GiocoDelLottoMethods {
     }
 
 
-    public List<Extraction> deleteAllExtractions (Session session) {
+    public Boolean deleteAllExtractions (Session session) {
+        if(session == null)
+            return false;
+
         checkSession(session);
-        List<Extraction> extractionList = getAllExtractions(session);
-        extractionList.stream().collect(Collectors.toList());
-        extractionList.clear();
-        return extractionList;
+
+        String queryString = "DELETE * FROM Extraction e ";
+        //...
     }
 
-    public List<Extraction> deleteAllExtractionsFromId(Session session, Long id) {
-        if (id != null) {
-            checkSession(session);
-            final String selectAllExtractionsAndDelete = "DELETE FROM Extraction e WHERE e.id = :id";
-            List<Extraction> extractionList = session.createQuery(selectAllExtractionsAndDelete)
-                    .setParameter("id", id)
-                    .list();
+    public Boolean deleteAllExtractionsFromId(Session session, Long id) {
+        if(session == null || id == null)
+            return false;
 
-            return extractionList;
-        }
-        return null;
+        checkSession(session);
+
+        // two way
+        // SQL query DELETE e FROM Extraction e where e.id = :id    --> not so good
+        // retrieve Extraction with select and session.delete if(extraction != null)
+
     }
+
+
 }
