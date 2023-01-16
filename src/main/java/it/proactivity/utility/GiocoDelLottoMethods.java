@@ -98,6 +98,7 @@ public class GiocoDelLottoMethods {
     }
 
     public Boolean insertExtractionByDateAndWheel(Session session, String date, String wheelCityName) {
+
         checkSession(session);
 
         if (date == null || date.isEmpty() || wheelCityName == null || wheelCityName.isEmpty()) {
@@ -106,8 +107,8 @@ public class GiocoDelLottoMethods {
         }
 
 
-        final Wheel wheel = getWheelByCityName(session, wheelCityName);
-        if (wheel == null) {
+        final List<Wheel> wheelList = getWheelByCityName(session, wheelCityName);
+        if (wheelList == null || wheelList.isEmpty()) {
             endSession(session);
             return false;
         }
@@ -120,7 +121,7 @@ public class GiocoDelLottoMethods {
 
         List<Integer> extractionList = new ArrayList<>(generateValidExtractionSequence());
 
-        Extraction extraction = createExtraction(parsedDate, wheel, extractionList);
+        Extraction extraction = createExtraction(parsedDate, wheelList.get(0), extractionList);
         if (extraction != null) {
             session.persist(extraction);
             endSession(session);
@@ -131,7 +132,7 @@ public class GiocoDelLottoMethods {
         }
     }
 
-    private Wheel getWheelByCityName(Session session, String wheelCityName) {
+    private List<Wheel> getWheelByCityName(Session session, String wheelCityName) {
         if (session == null || wheelCityName == null || wheelCityName.isEmpty())
             return null;
 
@@ -139,7 +140,7 @@ public class GiocoDelLottoMethods {
                 "WHERE w.city = :city";
         Query<Wheel> query = session.createQuery(queryString).setParameter("city", wheelCityName);
 
-        return query.getSingleResult();
+        return  query.getResultList();
     }
 
     private int generateValidNumberForExtraction() {
@@ -175,6 +176,7 @@ public class GiocoDelLottoMethods {
     public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
 
         if (session == null || date == null || date.isEmpty()) {
+            endSession(session);
             return false;
         }
 
@@ -183,6 +185,7 @@ public class GiocoDelLottoMethods {
         LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
 
         if (parsedDate == null) {
+            endSession(session);
             return false;
         }
 
@@ -221,11 +224,11 @@ public class GiocoDelLottoMethods {
         Query query = session.createSQLQuery("SELECT e.first_number " +
                 "FROM extraction e, wheel w " +
                 "WHERE w.city IN('Bari', 'Firenze', 'Milano', 'Napoli', 'Palermo', 'Roma') " +
-               // "AND e.extraction_date = :date " +
+                "AND e.extraction_date = :date " +
                 " AND e.wheel_id = w.id " +
                 "ORDER BY w.city");
 
-       // query.setParameter("date", date);
+       query.setParameter("date", date);
 
         List<Integer> firstNumbers = query.getResultList();
 
