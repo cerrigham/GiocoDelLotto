@@ -171,4 +171,64 @@ public class GiocoDelLottoMethods {
 
         return extraction;
     }
+
+    public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
+
+        if (session == null || date == null || date.isEmpty()) {
+            return false;
+        }
+
+        checkSession(session);
+
+        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+
+        if (parsedDate == null) {
+            return false;
+        }
+
+        List<Integer> firstNumbersList = getFirstNumbersList(session,parsedDate);
+
+        Query query = session.createSQLQuery("INSERT INTO superenalotto (bari, firenze, milano, napoli, palermo, roma, extraction_date)" +
+                "VALUES (:bari, :firenze, :milano, :napoli, :palermo, :roma, :date)");
+
+        query.setParameter("bari",firstNumbersList.get(0));
+        query.setParameter("firenze",firstNumbersList.get(1));
+        query.setParameter("milano",firstNumbersList.get(2));
+        query.setParameter("napoli",firstNumbersList.get(3));
+        query.setParameter("palermo",firstNumbersList.get(4));
+        query.setParameter("roma",firstNumbersList.get(5));
+        query.setParameter("date",parsedDate);
+
+        int res = query.executeUpdate();
+
+        endSession(session);
+
+        if(res != 0)
+            return true;
+        else
+            return false;
+
+
+
+    }
+
+    private List<Integer> getFirstNumbersList(Session session, LocalDate date) {
+
+        if (session == null) {
+            return null;
+        }
+
+        Query query = session.createSQLQuery("SELECT e.first_number " +
+                "FROM extraction e, wheel w " +
+                "WHERE w.city IN('Bari', 'Firenze', 'Milano', 'Napoli', 'Palermo', 'Roma') " +
+               // "AND e.extraction_date = :date " +
+                " AND e.wheel_id = w.id " +
+                "ORDER BY w.city");
+
+       // query.setParameter("date", date);
+
+        List<Integer> firstNumbers = query.getResultList();
+
+        return firstNumbers;
+    }
 }

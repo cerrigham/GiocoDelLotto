@@ -182,4 +182,36 @@ class GiocoDelLottoMethodsTest {
         assertTrue(!session.isOpen());
 
     }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoPositiveTest() {
+        Session session = createSession();
+
+        assertTrue(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,"2023-01-12"));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoWrongFormatDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,"12-01-2023"));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoEmptyDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,""));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void insertExtractionIntoSuperenalottoNullDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,null));
+        assertFalse(session.isOpen());
+    }
 }
