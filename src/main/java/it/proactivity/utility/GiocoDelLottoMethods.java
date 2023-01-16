@@ -8,10 +8,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class GiocoDelLottoMethods {
 
@@ -108,12 +105,12 @@ public class GiocoDelLottoMethods {
             return false;
         }
 
-        // retrieve wheel by cityName and check
+
         final Wheel wheel = getWheelByCityName(session, wheelCityName);
-       if(wheel == null) {
-           endSession(session);
-           return false;
-       }
+        if (wheel == null) {
+            endSession(session);
+            return false;
+        }
 
         LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
         if (parsedDate == null) {
@@ -121,22 +118,21 @@ public class GiocoDelLottoMethods {
             return false;
         }
 
-        Set<Integer> extractionSet = generateValidExtractionSequence();
-        Extraction extraction = new Extraction();
-        extraction.setExtractionDate(parsedDate);
-        extraction.setWheel(wheel);
-        //extraction.setFirstNumber(extractionSet.);
-        //extraction.setSecondNumber();
-        // ...
+        List<Integer> extractionList = new ArrayList<>(generateValidExtractionSequence());
 
-
-        session.persist(extraction);
-        endSession(session);
-        return true;
+        Extraction extraction = createExtraction(parsedDate, wheel, extractionList);
+        if (extraction != null) {
+            session.persist(extraction);
+            endSession(session);
+            return true;
+        } else {
+            endSession(session);
+            return false;
+        }
     }
 
     private Wheel getWheelByCityName(Session session, String wheelCityName) {
-        if(session == null || wheelCityName == null || wheelCityName.isEmpty())
+        if (session == null || wheelCityName == null || wheelCityName.isEmpty())
             return null;
 
         String queryString = "SELECT w FROM Wheel w " +
@@ -154,9 +150,25 @@ public class GiocoDelLottoMethods {
     private Set<Integer> generateValidExtractionSequence() {
         Set<Integer> extraction = new HashSet<>();
 
-        while(extraction.size() != 5) {
+        while (extraction.size() != 5) {
             extraction.add(generateValidNumberForExtraction());
         }
+        return extraction;
+    }
+
+    private Extraction createExtraction(LocalDate date, Wheel wheel, List<Integer> extractionList) {
+        if (date == null || wheel == null || extractionList == null || extractionList.isEmpty())
+            return null;
+
+        Extraction extraction = new Extraction();
+        extraction.setWheel(wheel);
+        extraction.setExtractionDate(date);
+        extraction.setFirstNumber(extractionList.get(0));
+        extraction.setSecondNumber(extractionList.get(1));
+        extraction.setThirdNumber(extractionList.get(2));
+        extraction.setFourthNumber(extractionList.get(3));
+        extraction.setFifthNumber(extractionList.get(4));
+
         return extraction;
     }
 }

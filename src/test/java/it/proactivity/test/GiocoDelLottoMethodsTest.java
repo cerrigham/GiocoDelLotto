@@ -38,7 +38,7 @@ class GiocoDelLottoMethodsTest {
     @Test
     public void getAllExtractionForOneDatePositiveTest() {
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,"2023-01-12");
+        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session, "2023-01-12");
 
         assertFalse(session.isOpen());
         assertNotNull(extractions);
@@ -49,13 +49,13 @@ class GiocoDelLottoMethodsTest {
                                 !(e.getFifthNumber().equals(null))))))));
 
     }
-    
+
     @Test
     public void checkExtractionListDatePositive() {
-        LocalDate date = LocalDate.of(2023,01,12);
+        LocalDate date = LocalDate.of(2023, 01, 12);
 
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,"2023-01-12");
+        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session, "2023-01-12");
 
         assertFalse(session.isOpen());
         extractions.stream()
@@ -64,10 +64,10 @@ class GiocoDelLottoMethodsTest {
 
     @Test
     public void getAllExtractionsNegativeTest() {
-        LocalDate date = LocalDate.of(2023,01,14);
+        LocalDate date = LocalDate.of(2023, 01, 14);
 
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,"2023-01-12");
+        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session, "2023-01-12");
 
         assertFalse(session.isOpen());
         assertFalse(session.isOpen());
@@ -78,7 +78,7 @@ class GiocoDelLottoMethodsTest {
     @Test
     public void getAllExtractionForOneDateNegativeNullDateTest() {
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,null);
+        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session, null);
 
         assertFalse(session.isOpen());
         assertNull(extractions);
@@ -87,7 +87,7 @@ class GiocoDelLottoMethodsTest {
     @Test
     public void getAllExtractionForOneDateNegativeWrongFormatDateTest() {
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,"12-01-2023");
+        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session, "12-01-2023");
 
         assertFalse(session.isOpen());
         assertNull(extractions);
@@ -96,7 +96,7 @@ class GiocoDelLottoMethodsTest {
     @Test
     public void getAllExtractionForOneDateNegativeEmptyDateTest() {
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session,"");
+        List<Extraction> extractions = getGiocoDelLottoMethods().getAllExtractionForOneDate(session, "");
 
         assertFalse(session.isOpen());
         assertNull(extractions);
@@ -125,7 +125,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelPositiveTest() {
         Session session = createSession();
 
-        assertTrue(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19","Nazionale"));
+        assertTrue(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, "2023-01-19", "Nazionale"));
         assertTrue(!session.isOpen());
     }
 
@@ -133,7 +133,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelWrongFormateDateNegativeTest() {
         Session session = createSession();
 
-        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"19-01-2023","Nazionale"));
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, "19-01-2023", "Nazionale"));
         assertTrue(!session.isOpen());
 
     }
@@ -142,7 +142,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelEmptyDateNegativeTest() {
         Session session = createSession();
 
-        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"","Nazionale"));
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, "", "Nazionale"));
         assertTrue(!session.isOpen());
 
     }
@@ -151,7 +151,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelNullDateNegativeTest() {
         Session session = createSession();
 
-        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,null,"Nazionale"));
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, null, "Nazionale"));
         assertTrue(!session.isOpen());
 
     }
@@ -160,7 +160,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelEmptyCityNegativeTest() {
         Session session = createSession();
 
-        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19",""));
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, "2023-01-19", ""));
         assertTrue(!session.isOpen());
 
     }
@@ -169,7 +169,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelWrongCityNegativeTest() {
         Session session = createSession();
 
-        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19","Genova"));
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, "2023-01-19", "Genova"));
         assertTrue(!session.isOpen());
 
     }
@@ -178,7 +178,7 @@ class GiocoDelLottoMethodsTest {
     public void insertExtractionByDateAndWheelNullCityNegativeTest() {
         Session session = createSession();
 
-        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session,"2023-01-19",null));
+        assertFalse(getGiocoDelLottoMethods().insertExtractionByDateAndWheel(session, "2023-01-19", null));
         assertTrue(!session.isOpen());
 
     }
