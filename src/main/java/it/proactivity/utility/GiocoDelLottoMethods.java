@@ -8,9 +8,15 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class GiocoDelLottoMethods {
+
+    private final static int MIN = 1;
+    private final static int MAX = 90;
 
     public Session createSession() {
         SessionFactory sessionFactory = new Configuration().configure()
@@ -94,20 +100,20 @@ public class GiocoDelLottoMethods {
         return wheelQuery.getSingleResult();
     }
 
-    public Boolean insertExtractionByDateAndWheel(Session session, String date, String city) {
-
+    public Boolean insertExtractionByDateAndWheel(Session session, String date, String wheelCityName) {
         checkSession(session);
 
-        if (date == null || date.isEmpty() || city == null || city.isEmpty()) {
+        if (date == null || date.isEmpty() || wheelCityName == null || wheelCityName.isEmpty()) {
             endSession(session);
             return false;
         }
 
-        Integer wheelId = TransformerUtility.transformCityToId(city);
-        if (wheelId.equals(0)) {
-            endSession(session);
-            return false;
-        }
+        // retrieve wheel by cityName and check
+        final Wheel wheel = getWheelByCityName(session, wheelCityName);
+       if(wheel == null) {
+           endSession(session);
+           return false;
+       }
 
         LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
         if (parsedDate == null) {
@@ -115,30 +121,42 @@ public class GiocoDelLottoMethods {
             return false;
         }
 
+        Set<Integer> extractionSet = generateValidExtractionSequence();
+        Extraction extraction = new Extraction();
+        extraction.setExtractionDate(parsedDate);
+        extraction.setWheel(wheel);
+        //extraction.setFirstNumber(extractionSet.);
+        //extraction.setSecondNumber();
+        // ...
 
-        Query insertExtraction = session.createSQLQuery("INSERT INTO extraction (first_number, " +
-                "second_number, third_number, fourth_number, fifth_number, extraction_date, wheel_id) " +
-                "VALUES(:first, :second, :third, :fourth, :fifth, :date, :city)");
 
-        //Controllare che non vengano generati numeri uguali
-        insertExtraction.setParameter("first", (int)Math.abs (Math.random() * (1 - 90 + 1)) + 1);
-        insertExtraction.setParameter("second", (int)Math.abs (Math.random() * (1 - 90 + 1)) + 1);
-        insertExtraction.setParameter("third", (int) Math.abs(Math.random() * (1 - 90 + 1)) + 1);
-        insertExtraction.setParameter("fourth", (int)Math.abs (Math.random() * (1 - 90 + 1)) + 1);
-        insertExtraction.setParameter("fifth", (int) Math.abs(Math.random() * (1 - 90 + 1)) + 1);
-        insertExtraction.setParameter("date",parsedDate);
-        insertExtraction.setParameter("city",wheelId);
-
-        int res = insertExtraction.executeUpdate();
-
+        session.persist(extraction);
         endSession(session);
-
-        if (res != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
 
+    private Wheel getWheelByCityName(Session session, String wheelCityName) {
+        if(session == null || wheelCityName == null || wheelCityName.isEmpty())
+            return null;
 
+        String queryString = "SELECT w FROM Wheel w " +
+                "WHERE w.city = :city";
+        Query<Wheel> query = session.createQuery(queryString).setParameter("city", wheelCityName);
+
+        return query.getSingleResult();
+    }
+
+    private int generateValidNumberForExtraction() {
+        Random random = new Random();
+        return random.nextInt(MAX - MIN) + MIN;
+    }
+
+    private Set<Integer> generateValidExtractionSequence() {
+        Set<Integer> extraction = new HashSet<>();
+
+        while(extraction.size() != 5) {
+            extraction.add(generateValidNumberForExtraction());
+        }
+        return extraction;
+    }
 }
