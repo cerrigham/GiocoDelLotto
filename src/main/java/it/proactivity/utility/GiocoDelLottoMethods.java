@@ -140,7 +140,7 @@ public class GiocoDelLottoMethods {
                 "WHERE w.city = :city";
         Query<Wheel> query = session.createQuery(queryString).setParameter("city", wheelCityName);
 
-        return  query.getResultList();
+        return query.getResultList();
     }
 
     private int generateValidNumberForExtraction() {
@@ -174,7 +174,6 @@ public class GiocoDelLottoMethods {
     }
 
     public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
-
         if (session == null || date == null || date.isEmpty()) {
             endSession(session);
             return false;
@@ -189,34 +188,30 @@ public class GiocoDelLottoMethods {
             return false;
         }
 
-        List<Integer> firstNumbersList = getFirstNumbersList(session,parsedDate);
+        List<Integer> firstNumbersList = getFirstNumbersList(session, parsedDate);
 
         Query query = session.createSQLQuery("INSERT INTO superenalotto (bari, firenze, milano, napoli, palermo, roma, extraction_date)" +
                 "VALUES (:bari, :firenze, :milano, :napoli, :palermo, :roma, :date)");
 
-        query.setParameter("bari",firstNumbersList.get(0));
-        query.setParameter("firenze",firstNumbersList.get(1));
-        query.setParameter("milano",firstNumbersList.get(2));
-        query.setParameter("napoli",firstNumbersList.get(3));
-        query.setParameter("palermo",firstNumbersList.get(4));
-        query.setParameter("roma",firstNumbersList.get(5));
-        query.setParameter("date",parsedDate);
+        query.setParameter("bari", firstNumbersList.get(0));
+        query.setParameter("firenze", firstNumbersList.get(1));
+        query.setParameter("milano", firstNumbersList.get(2));
+        query.setParameter("napoli", firstNumbersList.get(3));
+        query.setParameter("palermo", firstNumbersList.get(4));
+        query.setParameter("roma", firstNumbersList.get(5));
+        query.setParameter("date", parsedDate);
 
         int res = query.executeUpdate();
 
         endSession(session);
 
-        if(res != 0)
+        if (res != 0)
             return true;
         else
             return false;
-
-
-
     }
 
     private List<Integer> getFirstNumbersList(Session session, LocalDate date) {
-
         if (session == null) {
             return null;
         }
@@ -228,7 +223,7 @@ public class GiocoDelLottoMethods {
                 " AND e.wheel_id = w.id " +
                 "ORDER BY w.city");
 
-       query.setParameter("date", date);
+        query.setParameter("date", date);
 
         List<Integer> firstNumbers = query.getResultList();
 
