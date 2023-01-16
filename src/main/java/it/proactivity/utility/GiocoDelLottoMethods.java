@@ -9,6 +9,7 @@ import org.hibernate.query.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GiocoDelLottoMethods {
 
@@ -95,4 +96,24 @@ public class GiocoDelLottoMethods {
     }
 
 
+    public List<Extraction> deleteAllExtractions (Session session) {
+        checkSession(session);
+        List<Extraction> extractionList = getAllExtractions(session);
+        extractionList.stream().collect(Collectors.toList());
+        extractionList.clear();
+        return extractionList;
+    }
+
+    public List<Extraction> deleteAllExtractionsFromId(Session session, Long id) {
+        if (id != null) {
+            checkSession(session);
+            final String selectAllExtractionsAndDelete = "DELETE FROM Extraction e WHERE e.id = :id";
+            List<Extraction> extractionList = session.createQuery(selectAllExtractionsAndDelete)
+                    .setParameter("id", id)
+                    .list();
+
+            return extractionList;
+        }
+        return null;
+    }
 }
