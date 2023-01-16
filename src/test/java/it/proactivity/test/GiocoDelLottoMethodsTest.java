@@ -9,6 +9,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,19 +121,19 @@ class GiocoDelLottoMethodsTest {
         assertFalse(session.isOpen());
         assertNull(extractionList);
     }
-
-    @Test
-    public void deleteAllExtractionsFromIdTest() {
-        Session sesssion = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().deleteAllExtractionsFromId(sesssion, 2l);
-        assertNull(extractions);
-    }
-
     @Test
     public void deleteAllExtractionsTest() {
         Session session = createSession();
-        List<Extraction> extractions = getGiocoDelLottoMethods().deleteAllExtractions(session);
 
-        assertTrue(extractions.size() == 0);
+        List<Extraction> extractionList = new ArrayList<>();
+        extractionList
+        assertTrue(getGiocoDelLottoMethods().deleteAllExtractions(session) == true);
+        assertFalse(session.isOpen());
     }
+    @Test
+    public void deleteAllExtractionsFromIdTest() {
+        Session sesssion = createSession();
+    }
+
+
 }

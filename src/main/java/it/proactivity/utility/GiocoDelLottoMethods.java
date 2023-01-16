@@ -9,7 +9,6 @@ import org.hibernate.query.Query;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GiocoDelLottoMethods {
 
@@ -95,27 +94,33 @@ public class GiocoDelLottoMethods {
         return wheelQuery.getSingleResult();
     }
 
-
-    public Boolean deleteAllExtractions (Session session) {
-        if(session == null)
+    public Boolean deleteAllExtractions(Session session) {
+        if (session == null) {
             return false;
-
+        }
         checkSession(session);
 
-        String queryString = "DELETE * FROM Extraction e ";
-        //...
+        final String queryString = "DELETE FROM Extraction e";
+        Query<Extraction> extractionQuery = session.createQuery(queryString);
+        extractionQuery.executeUpdate();
+        endSession(session);
+        return true;
     }
 
     public Boolean deleteAllExtractionsFromId(Session session, Long id) {
-        if(session == null || id == null)
+        if (session == null || id == null) {
             return false;
-
+        }
         checkSession(session);
 
-        // two way
-        // SQL query DELETE e FROM Extraction e where e.id = :id    --> not so good
-        // retrieve Extraction with select and session.delete if(extraction != null)
-
+        final String queryString = "SELECT e FROM Extraction e WHERE e.id = :id";
+        Query<Extraction> extractionQuery = session.createQuery(queryString)
+                .setParameter("id", id);
+        if (extractionQuery != null) {
+            session.delete(extractionQuery);
+        }
+        endSession(session);
+        return true;
     }
 
 
