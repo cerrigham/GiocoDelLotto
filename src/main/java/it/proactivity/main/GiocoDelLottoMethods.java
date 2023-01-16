@@ -1,7 +1,8 @@
-package it.proactivity.utility;
+package it.proactivity.main;
 
 import it.proactivity.model.Extraction;
 import it.proactivity.model.Wheel;
+import it.proactivity.utility.ParsingUtility;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -23,7 +24,7 @@ public class GiocoDelLottoMethods {
         return session;
     }
 
-    private void checkSession(Session session) {
+    public void checkSession(Session session) {
         if (!session.isOpen()) {
             session = createSession();
         }
@@ -36,6 +37,9 @@ public class GiocoDelLottoMethods {
     }
 
     public List<Extraction> getAllExtractions(Session session) {
+        if(session == null)
+            return null;
+
         checkSession(session);
 
         final String selectAllExtractions = "SELECT e FROM Extraction e";
@@ -48,6 +52,9 @@ public class GiocoDelLottoMethods {
     }
 
     public List<Extraction> getAllExtractionForOneDate(Session session, String date) {
+        if(session == null)
+            return null;
+
         checkSession(session);
 
         if (date == null || date.isEmpty()) {
@@ -75,6 +82,9 @@ public class GiocoDelLottoMethods {
     }
 
     public List<Extraction> getAllExtractionsFromWheel(Session session, Wheel wheel) {
+        if(session == null)
+            return null;
+
         if (wheel == null) {
             endSession(session);
             return null;
@@ -98,6 +108,8 @@ public class GiocoDelLottoMethods {
     }
 
     public Boolean insertExtractionByDateAndWheel(Session session, String date, String wheelCityName) {
+        if(session == null)
+            return null;
 
         checkSession(session);
 
@@ -130,6 +142,100 @@ public class GiocoDelLottoMethods {
             endSession(session);
             return false;
         }
+    }
+
+    public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
+        if (session == null || date == null || date.isEmpty()) {
+            endSession(session);
+            return false;
+        }
+
+        checkSession(session);
+
+        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+
+        if (parsedDate == null) {
+            endSession(session);
+            return false;
+        }
+
+        List<Integer> firstNumbersList = getFirstNumbersList(session, parsedDate);
+
+        Query query = session.createSQLQuery("INSERT INTO superenalotto (bari, firenze, milano, napoli, palermo, roma, extraction_date)" +
+                "VALUES (:bari, :firenze, :milano, :napoli, :palermo, :roma, :date)");
+
+        query.setParameter("bari", firstNumbersList.get(0));
+        query.setParameter("firenze", firstNumbersList.get(1));
+        query.setParameter("milano", firstNumbersList.get(2));
+        query.setParameter("napoli", firstNumbersList.get(3));
+        query.setParameter("palermo", firstNumbersList.get(4));
+        query.setParameter("roma", firstNumbersList.get(5));
+        query.setParameter("date", parsedDate);
+
+        int res = query.executeUpdate();
+
+        endSession(session);
+
+        if (res != 0)
+            return true;
+        else
+            return false;
+    }
+
+    public Boolean deleteAllExtractions(Session session) {
+        if (session == null) {
+            return false;
+        }
+        checkSession(session);
+
+        final String queryString = "DELETE FROM Extraction e";
+        Query<Extraction> extractionQuery = session.createQuery(queryString);
+        extractionQuery.executeUpdate();
+        endSession(session);
+
+        return true;
+    }
+
+    public Boolean deleteAllExtractionsFromId(Session session, Long id) {
+        if (session == null || id == null) {
+            return false;
+        }
+        checkSession(session);
+
+        final String queryString = "SELECT e " +
+                "FROM Extraction e " +
+                "WHERE e.id = :id";
+        Query<Extraction> extractionQuery = session.createQuery(queryString)
+                .setParameter("id", id);
+        List<Extraction> extractionList = extractionQuery.getResultList();
+
+        if (extractionList == null && extractionList.size() > 1) {
+            endSession(session);
+            return false;
+        } else {
+            session.delete(extractionList.get(0));
+            endSession(session);
+            return true;
+        }
+    }
+
+    private List<Integer> getFirstNumbersList(Session session, LocalDate date) {
+        if (session == null) {
+            return null;
+        }
+
+        Query query = session.createSQLQuery("SELECT e.first_number " +
+                "FROM extraction e, wheel w " +
+                "WHERE w.city IN('Bari', 'Firenze', 'Milano', 'Napoli', 'Palermo', 'Roma') " +
+                "AND e.extraction_date = :date " +
+                " AND e.wheel_id = w.id " +
+                "ORDER BY w.city");
+
+        query.setParameter("date", date);
+
+        List<Integer> firstNumbers = query.getResultList();
+
+        return firstNumbers;
     }
 
     private List<Wheel> getWheelByCityName(Session session, String wheelCityName) {
@@ -171,62 +277,5 @@ public class GiocoDelLottoMethods {
         extraction.setFifthNumber(extractionList.get(4));
 
         return extraction;
-    }
-
-    public Boolean insertExtractionIntoSuperenalotto(Session session, String date) {
-        if (session == null || date == null || date.isEmpty()) {
-            endSession(session);
-            return false;
-        }
-
-        checkSession(session);
-
-        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
-
-        if (parsedDate == null) {
-            endSession(session);
-            return false;
-        }
-
-        List<Integer> firstNumbersList = getFirstNumbersList(session, parsedDate);
-
-        Query query = session.createSQLQuery("INSERT INTO superenalotto (bari, firenze, milano, napoli, palermo, roma, extraction_date)" +
-                "VALUES (:bari, :firenze, :milano, :napoli, :palermo, :roma, :date)");
-
-        query.setParameter("bari", firstNumbersList.get(0));
-        query.setParameter("firenze", firstNumbersList.get(1));
-        query.setParameter("milano", firstNumbersList.get(2));
-        query.setParameter("napoli", firstNumbersList.get(3));
-        query.setParameter("palermo", firstNumbersList.get(4));
-        query.setParameter("roma", firstNumbersList.get(5));
-        query.setParameter("date", parsedDate);
-
-        int res = query.executeUpdate();
-
-        endSession(session);
-
-        if (res != 0)
-            return true;
-        else
-            return false;
-    }
-
-    private List<Integer> getFirstNumbersList(Session session, LocalDate date) {
-        if (session == null) {
-            return null;
-        }
-
-        Query query = session.createSQLQuery("SELECT e.first_number " +
-                "FROM extraction e, wheel w " +
-                "WHERE w.city IN('Bari', 'Firenze', 'Milano', 'Napoli', 'Palermo', 'Roma') " +
-                "AND e.extraction_date = :date " +
-                " AND e.wheel_id = w.id " +
-                "ORDER BY w.city");
-
-        query.setParameter("date", date);
-
-        List<Integer> firstNumbers = query.getResultList();
-
-        return firstNumbers;
     }
 }

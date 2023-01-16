@@ -2,7 +2,7 @@ package it.proactivity.test;
 
 import it.proactivity.model.Extraction;
 import it.proactivity.model.Wheel;
-import it.proactivity.utility.GiocoDelLottoMethods;
+import it.proactivity.main.GiocoDelLottoMethods;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
