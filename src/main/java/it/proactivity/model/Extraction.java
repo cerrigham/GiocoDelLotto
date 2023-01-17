@@ -47,6 +47,8 @@ public class Extraction {
         sb.append("[" + id + "]" + " ");
         sb.append(fifthNumber + " - " + secondNumber + " - " + thirdNumber + " - " + fourthNumber
                 + " - " + fifthNumber);
+        sb.append(" ruota " + wheel.getCity() + " data estrazione " + extractionDate);
+        sb.append("\n");
         return sb.toString();
     }
 
