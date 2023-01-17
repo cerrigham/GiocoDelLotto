@@ -1,6 +1,7 @@
 package it.proactivity.utility;
 
 import it.proactivity.model.Extraction;
+import it.proactivity.model.Superenalotto;
 import it.proactivity.model.Wheel;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -8,6 +9,8 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GiocoDelLottoMethods {
@@ -122,6 +125,48 @@ public class GiocoDelLottoMethods {
         endSession(session);
         return true;
     }
+    /*public Extraction getSmallestExtractionFromAWheel(Session session, String wheelName) {
+        if (session == null && wheelName == null) {
+            return null;
+        }
+        checkSession(session);
 
+        final String stringQuery = "SELECT min(Extraction) " +
+                "FROM Wheel w " +
+                "WHERE w.city = :wheelName";
+        Query<Wheel> wheelQuery = session.createQuery(stringQuery)
+                .setParameter("wheelName", wheelName);
+        endSession(session);
+        return wheelQuery.getSingleResult();
+    }*/
+
+    public List<Integer> getMaxAndMinAverageFromSuperenalotto(Session session, Superenalotto superenalotto) {
+        if (session == null || superenalotto == null) {
+            return null;
+        }
+        checkSession(session);
+
+        final String stringQuery = "SELECT s " +
+                "FROM Superenalotto s";
+        Query<Superenalotto> superenalottoQuery = session.createQuery(stringQuery);
+        List<Superenalotto> superenalottoList = superenalottoQuery.getResultList();
+        if (superenalottoList != null) {
+            getAverage(superenalottoList);
+        }
+
+    }
+
+    private double getAverage(List<Integer> myList) {
+        long sum = 0;
+        for (int i : myList) {
+            sum += i;
+        }
+        return sum / myList.size();
+    }
+
+    private List<Integer> superenalottoNumbers(List<Superenalotto> myList) {
+        List<Integer> intList = new ArrayList<>();
+        intList.add();
+    }
 
 }
