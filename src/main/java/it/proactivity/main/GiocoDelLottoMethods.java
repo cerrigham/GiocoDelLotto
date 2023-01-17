@@ -1,6 +1,7 @@
 package it.proactivity.main;
 
 import it.proactivity.model.Extraction;
+import it.proactivity.model.Superenalotto;
 import it.proactivity.model.Wheel;
 import it.proactivity.utility.ParsingUtility;
 import org.hibernate.Session;
@@ -37,7 +38,7 @@ public class GiocoDelLottoMethods {
     }
 
     public List<Extraction> getAllExtractions(Session session) {
-        if(session == null)
+        if (session == null)
             return null;
 
         checkSession(session);
@@ -52,7 +53,7 @@ public class GiocoDelLottoMethods {
     }
 
     public List<Extraction> getAllExtractionForOneDate(Session session, String date) {
-        if(session == null)
+        if (session == null)
             return null;
 
         checkSession(session);
@@ -82,7 +83,7 @@ public class GiocoDelLottoMethods {
     }
 
     public List<Extraction> getAllExtractionsFromWheel(Session session, Wheel wheel) {
-        if(session == null)
+        if (session == null)
             return null;
 
         if (wheel == null) {
@@ -108,7 +109,7 @@ public class GiocoDelLottoMethods {
     }
 
     public Boolean insertExtractionByDateAndWheel(Session session, String date, String wheelCityName) {
-        if(session == null)
+        if (session == null)
             return null;
 
         checkSession(session);
@@ -218,7 +219,119 @@ public class GiocoDelLottoMethods {
             return true;
         }
     }
+    public Boolean insertTenSuperenalottoExtraction(Session session, String date) {
+        if (session == null || date == null || date.isEmpty()) {
+            endSession(session);
+            return false;
+        }
 
+        checkSession(session);
+        LocalDate parsedDate = ParsingUtility.parseStringToDate(date);
+        if (parsedDate == null) {
+            endSession(session);
+            return false;
+        }
+        int counter = 1;
+        int res = 0;
+        while (counter <= 10) {
+
+            Set<Integer> extractionsSet = generateValidExtractionSequenceForSuperenalotto();
+            if (extractionsSet == null || extractionsSet.isEmpty()) {
+                endSession(session);
+                return false;
+            }
+            List<Integer> extractionsList = new ArrayList<>(extractionsSet);
+
+            Query query = session.createSQLQuery("INSERT INTO superenalotto(bari, firenze, milano," +
+                    " palermo, roma, napoli, extraction_date)" +
+                    "VALUES(:bari, :firenze, :milano, :palermo, :roma, :napoli, :date)");
+
+            query.setParameter("bari", extractionsList.get(0));
+            query.setParameter("firenze", extractionsList.get(1));
+            query.setParameter("milano", extractionsList.get(2));
+            query.setParameter("napoli", extractionsList.get(3));
+            query.setParameter("palermo", extractionsList.get(4));
+            query.setParameter("roma", extractionsList.get(5));
+            query.setParameter("date", parsedDate);
+
+            res = query.executeUpdate();
+            counter++;
+        }
+
+        endSession(session);
+
+        if (res != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public List<Integer> findMinMaxAvarageFromSuperenalottoExtraction(Session session) {
+        if (session == null) {
+            endSession(session);
+            return null;
+        }
+        checkSession(session);
+
+        final String getAllSuperenalottoExtraction = "SELECT s FROM Superenalotto s";
+        Query<Superenalotto> query = session.createQuery(getAllSuperenalottoExtraction);
+
+
+        List<Superenalotto> superenalottoList = query.getResultList();
+
+        if (superenalottoList == null || superenalottoList.isEmpty()) {
+            endSession(session);
+            return null;
+        }
+
+        List<Integer> mediumValueList = getMediumValueFromSuperenalottoList(superenalottoList);
+
+        if (mediumValueList == null || mediumValueList.isEmpty()) {
+            endSession(session);
+            return null;
+        }
+
+        List<Integer> resultList = new ArrayList<>();
+        Integer maxAvarage = mediumValueList.stream().max(Integer::max).get();
+        Integer minAvarage = mediumValueList.stream().min(Integer::min).get();
+        resultList.add(maxAvarage);
+        resultList.add(minAvarage);
+
+        endSession(session);
+        return resultList;
+
+    }
+
+    private List<Integer> getMediumValueFromSuperenalottoList(List<Superenalotto> list) {
+
+        List<Integer> mediumValueList = new ArrayList<>();
+        int counter = 0;
+        for (Superenalotto s : list) {
+         Integer sum = s.getBari();
+         counter++;
+
+         sum += s.getFirenze();
+         counter++;
+
+         sum += s.getMilano();
+         counter++;
+
+         sum += s.getRoma();
+         counter++;
+
+         sum += s.getNapoli();
+         counter++;
+
+         sum += s.getPalermo();
+         counter++;
+            Integer mediumValue = sum/counter;
+            mediumValueList.add(mediumValue);
+
+            counter = 0;
+        }
+        return mediumValueList;
+    }
     private List<Integer> getFirstNumbersList(Session session, LocalDate date) {
         if (session == null) {
             return null;
@@ -263,6 +376,15 @@ public class GiocoDelLottoMethods {
         return extraction;
     }
 
+    private Set<Integer> generateValidExtractionSequenceForSuperenalotto() {
+        Set<Integer> extraction = new HashSet<>();
+
+        while (extraction.size() != 6) {
+            extraction.add(generateValidNumberForExtraction());
+        }
+        return extraction;
+    }
+
     private Extraction createExtraction(LocalDate date, Wheel wheel, List<Integer> extractionList) {
         if (date == null || wheel == null || extractionList == null || extractionList.isEmpty())
             return null;
@@ -278,4 +400,6 @@ public class GiocoDelLottoMethods {
 
         return extraction;
     }
+
+
 }

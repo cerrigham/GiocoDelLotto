@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -213,5 +214,48 @@ class GiocoDelLottoMethodsTest {
 
         assertFalse(getGiocoDelLottoMethods().insertExtractionIntoSuperenalotto(session,null));
         assertFalse(session.isOpen());
+    }
+
+
+    @Test
+    public void insertTenSuperenalottoExtractionPositiveTest() {
+        Session session = createSession();
+
+        assertTrue(getGiocoDelLottoMethods().insertTenSuperenalottoExtraction(session,"2023-01-24"));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void insertTenSuperenalottoExtractionNullDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertTenSuperenalottoExtraction(session,null));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void insertTenSuperenalottoExtractionEmptyDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertTenSuperenalottoExtraction(session,""));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void insertTenSuperenalottoExtractionWrongFormatDateNegativeTest() {
+        Session session = createSession();
+
+        assertFalse(getGiocoDelLottoMethods().insertTenSuperenalottoExtraction(session,"11-09-2023"));
+        assertFalse(session.isOpen());
+    }
+
+    @Test
+    public void findMinMaxAvarageFromSuperenalottoExtractionPositiveTest() {
+        Session session = createSession();
+
+        List<Integer> minMaxAverageList = getGiocoDelLottoMethods().findMinMaxAvarageFromSuperenalottoExtraction(session);
+        assertEquals(24,minMaxAverageList.get(0));
+        assertFalse(session.isOpen());
+
     }
 }
